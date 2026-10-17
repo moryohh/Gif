@@ -8,3 +8,4 @@
 @media(max-width:520px){main{padding:10px}.game{padding:12px;border-radius:22px}.stage{height:285px}.phaser-stage{height:290px}.character{width:215px}.card{padding:15px}.answers button{font-size:18px}.arm{top:112px}.plate{width:105px;height:105px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:520px){.anime-stage{height:330px}.anime-character{height:320px}}
 .anime-stage.state-correct .anime-character{animation:none}
+.anime-character video{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;user-select:none}

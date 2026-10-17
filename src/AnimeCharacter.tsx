@@ -8,6 +8,7 @@ const path=(folder:string,n:number)=>`/anime-girl/${folder}/frame-${String(n).pa
 const f=(folder:string,n:number,duration=125,mirror=false):Frame=>({src:path(folder,n),duration,mirror});
 const mirrored=(frames:Frame[])=>frames.map(x=>({...x,mirror:true}));
 
+// Drawn breathing frames keep the body motion natural without scaling the whole image.
 const front:Frame[]=[
  f('idle',1,380),
  f('breathing',1,150),f('breathing',2,150),f('breathing',3,220),

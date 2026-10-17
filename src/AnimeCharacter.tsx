@@ -62,9 +62,9 @@ export function AnimeCharacter({state,mode}:{state:AnimState;mode:AnimeIdleMode}
   advance();return()=>{stopped=true;clearTimeout(timer)};
  },[state,mode,ready]);
  return <div className={`stage anime-stage state-${state}`} aria-label={`حالة الشخصية الثالثة: ${state}`}>
-  <div className="success">✓</div><div className="stars">✦　✧　✦</div>
-  <div className={`character anime-character ${shown.mirror?'mirror':''}`}><img src={shown.src} alt="فتاة أنمي كاملة الجسم" draggable={false}/><div className="cream-face"/></div>
-  <div className="arm"><span className="hand"/><span className="plate"><b/></span></div>
-  <div className="burst"/><div className="drops">{Array.from({length:9},(_,i)=><i key={i}/>)}</div>
+	  <div className="success">✓</div><div className="stars">✦　✧　✦</div>
+	  <div className={`character anime-character ${shown.mirror?'mirror':''}`}><img src={shown.src} alt="فتاة أنمي كاملة الجسم" draggable={false}/><div className="cream-face"/></div>
+	  <div className="arm"><span className="hand"/><span className="plate"><img src="/pie-plate.webp" alt="" draggable={false}/></span></div>
+	  <div className="burst"/><div className="drops">{Array.from({length:9},(_,i)=><i key={i}/>)}</div>
  </div>
 }

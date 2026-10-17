@@ -8,7 +8,14 @@ const path=(folder:string,n:number)=>`/anime-girl/${folder}/frame-${String(n).pa
 const f=(folder:string,n:number,duration=125,mirror=false):Frame=>({src:path(folder,n),duration,mirror});
 const mirrored=(frames:Frame[])=>frames.map(x=>({...x,mirror:true}));
 
-const front:Frame[]=[f('idle',1,560),f('idle',2),f('idle',3),f('idle',4,90),f('idle',5,100),f('idle',6),f('idle',7),f('idle',8,260),f('idle-extra',1),f('idle-extra',2,210),f('idle-extra',3),f('idle-extra',2),f('idle-extra',1),f('idle',8),f('idle',1,420)];
+const front:Frame[]=[
+ f('idle',1,380),
+ f('breathing',1,150),f('breathing',2,150),f('breathing',3,220),
+ f('breathing',4,150),f('breathing',5,150),f('breathing',6,340),
+ f('idle',4,90),f('idle',5,100),f('idle',6,120),
+ f('idle-extra',1),f('idle-extra',2,210),f('idle-extra',3),
+ f('idle-extra',2),f('idle-extra',1),f('idle',1,460)
+];
 const rightCore:Frame[]=[f('idle',1,300),f('look-transition',1),f('look-transition',2),f('look-transition',3),...Array.from({length:8},(_,i)=>f('look-right',i+1,i===0||i===7?280:120)),f('look-right',8),f('look-right',7),f('look-right',6),f('look-right',5,100),f('look-right',4),f('look-right',3),f('look-right',2),f('look-right',1,220),f('look-transition',3),f('look-transition',2),f('look-transition',1),f('idle',1,380)];
 const shy:Frame[]=[f('shy-smile',1,300),f('shy-smile',2),f('shy-smile',3),f('shy-smile',4,100),f('shy-smile',5,110),f('shy-smile',6),f('shy-transition',1),f('shy-transition',2),f('shy-transition',3),f('shy-smile',7,220),f('shy-smile',5,90),f('shy-smile',7,260),f('shy-transition',3),f('shy-transition',2),f('shy-transition',1),f('shy-smile',6),f('shy-smile',4,90),f('shy-smile',5,90),f('shy-smile',6),f('shy-smile',8),f('shy-smile',1,420)];
 const clips:Record<ClipName,Frame[]>={front,right:rightCore,left:mirrored(rightCore),shy};

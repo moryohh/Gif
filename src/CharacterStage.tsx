@@ -3,8 +3,9 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js';
 import type {AnimState} from './game';
+import {AnimeCharacter} from './AnimeCharacter';
 
-export type CharacterVariant='elf'|'cyborg';
+export type CharacterVariant='elf'|'cyborg'|'anime';
 type Controller={setState:(s:AnimState)=>void;destroy:()=>void};
 type Particle={m:THREE.Mesh;v:THREE.Vector3;spin:THREE.Vector3;life:number};
 const clamp=(n:number,a=0,b=1)=>Math.min(b,Math.max(a,n));
@@ -54,4 +55,5 @@ function makeController(host:HTMLDivElement,variant:CharacterVariant):Controller
  const ro=new ResizeObserver(()=>{const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()});ro.observe(host);
  return{setState,destroy:()=>{cancelAnimationFrame(raf);ro.disconnect();renderer.dispose();renderer.domElement.remove();scene.traverse(o=>{const m=o as THREE.Mesh;if(m.geometry)m.geometry.dispose();if(m.material)(Array.isArray(m.material)?m.material:[m.material]).forEach(x=>x.dispose())})}}
 }
-export function CharacterStage({state,variant}:{state:AnimState;variant:CharacterVariant}){const host=useRef<HTMLDivElement>(null),control=useRef<Controller|null>(null);useEffect(()=>{if(!host.current)return;control.current=makeController(host.current,variant);return()=>{control.current?.destroy();control.current=null}},[variant]);useEffect(()=>control.current?.setState(state),[state]);return <div className="phaser-stage elf-stage" ref={host} aria-label={`حالة الشخصية: ${state}`}/>}
+function ThreeCharacterStage({state,variant}:{state:AnimState;variant:Exclude<CharacterVariant,'anime'>}){const host=useRef<HTMLDivElement>(null),control=useRef<Controller|null>(null);useEffect(()=>{if(!host.current)return;control.current=makeController(host.current,variant);return()=>{control.current?.destroy();control.current=null}},[variant]);useEffect(()=>control.current?.setState(state),[state]);return <div className="phaser-stage elf-stage" ref={host} aria-label={`حالة الشخصية: ${state}`}/>}
+export function CharacterStage({state,variant}:{state:AnimState;variant:CharacterVariant}){return variant==='anime'?<AnimeCharacter state={state}/>:<ThreeCharacterStage state={state} variant={variant}/>}

@@ -7,6 +7,21 @@ type Frame={src:string;duration:number;mirror?:boolean};
 const path=(folder:string,n:number)=>`/anime-girl/${folder}/frame-${String(n).padStart(2,'0')}.webp`;
 const f=(folder:string,n:number,duration=125,mirror=false):Frame=>({src:path(folder,n),duration,mirror});
 const mirrored=(frames:Frame[])=>frames.map(x=>({...x,mirror:true}));
+const imageCache=new Map<string,Promise<void>>();
+const preloadImage=(src:string)=>{
+ let pending=imageCache.get(src);
+ if(!pending){
+  pending=new Promise(resolve=>{
+   const image=new Image();
+   image.onload=()=>{const decoded=image.decode?.();decoded?decoded.catch(()=>undefined).finally(resolve):resolve()};
+   image.onerror=()=>resolve();
+   image.src=src;
+  });
+  imageCache.set(src,pending);
+ }
+ return pending;
+};
+const preloadFrames=(frames:Frame[])=>Promise.all([...new Set(frames.map(x=>x.src))].map(preloadImage));
 
 // Drawn breathing frames keep the body motion natural without scaling the whole image.
 const front:Frame[]=[
@@ -24,14 +39,20 @@ const allFrames=[...new Set(Object.values(clips).flat().map(x=>x.src))];
 
 export function AnimeCharacter({state,mode}:{state:AnimState;mode:AnimeIdleMode}){
  const [shown,setShown]=useState<Frame>(front[0]);
- useEffect(()=>{allFrames.forEach(src=>{const image=new Image();image.src=src})},[]);
+ const [ready,setReady]=useState(false);
  useEffect(()=>{
-  if(state!=='idle'||matchMedia('(prefers-reduced-motion: reduce)').matches){setShown(front[0]);return}
+  let active=true;
+  preloadFrames(front).then(()=>{if(active)setReady(true)});
+  const background=window.setTimeout(()=>{allFrames.forEach(preloadImage)},250);
+  return()=>{active=false;clearTimeout(background)};
+ },[]);
+ useEffect(()=>{
+  if(!ready||state!=='idle'||matchMedia('(prefers-reduced-motion: reduce)').matches){setShown(front[0]);return}
   let stopped=false,timer=0,index=0,current:ClipName=mode==='auto'?'front':mode;
   const choose=()=>{const choices=(['front','right','left','shy'] as ClipName[]).filter(x=>x!==current);current=choices[Math.floor(Math.random()*choices.length)]};
-  const advance=()=>{const sequence=clips[current],frame=sequence[index];setShown(frame);timer=window.setTimeout(()=>{if(stopped)return;index++;if(index>=sequence.length){index=0;if(mode==='auto')choose()}advance()},frame.duration+(mode==='auto'&&index===sequence.length-1?900+Math.random()*1700:0))};
+  const advance=()=>{const sequence=clips[current],frame=sequence[index];setShown(frame);timer=window.setTimeout(()=>{if(stopped)return;index++;if(index>=sequence.length){index=0;if(mode==='auto')choose()}advance()},frame.duration+(mode==='auto'&&index===sequence.length-1?250+Math.random()*400:0))};
   advance();return()=>{stopped=true;clearTimeout(timer)};
- },[state,mode]);
+ },[state,mode,ready]);
  return <div className={`stage anime-stage state-${state}`} aria-label={`حالة الشخصية الثالثة: ${state}`}>
   <div className="success">✓</div><div className="stars">✦　✧　✦</div>
   <div className={`character anime-character ${shown.mirror?'mirror':''}`}><img src={shown.src} alt="فتاة أنمي كاملة الجسم" draggable={false}/><div className="cream-face"/></div>

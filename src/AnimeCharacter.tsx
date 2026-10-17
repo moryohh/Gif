@@ -56,11 +56,11 @@ export function AnimeCharacter({state,mode}:{state:AnimState;mode:AnimeIdleMode}
   const advance=()=>{const sequence=clips[current],frame=sequence[index];setShown(frame);timer=window.setTimeout(()=>{if(stopped)return;index++;if(index>=sequence.length){index=0;if(mode==='auto')choose()}advance()},frame.duration+(mode==='auto'&&index===sequence.length-1?250+Math.random()*400:0))};
   advance();return()=>{stopped=true;clearTimeout(timer)};
  },[state,mode,ready]);
- const videoSrc=state==='correct'?'/anime-girl/video/victory.webm':state==='idle'&&activeClip==='front'?'/anime-girl/video/idle.webm':null;
+ const isWrong=state==='wrong_start'||state==='pie_hit'||state==='cream_splash'||state==='reaction';
+ const videoSrc=state==='correct'?'/anime-girl/video/victory.webm':isWrong?'/anime-girl/video/wrong.webm':state==='idle'&&activeClip==='front'?'/anime-girl/video/idle.webm':null;
  return <div className={`stage anime-stage state-${state}`} aria-label={`حالة الشخصية الثالثة: ${state}`}>
   <div className="success">✓</div><div className="stars">✦　✧　✦</div>
-  <div className={`character anime-character ${shown.mirror&&!videoSrc?'mirror':''}`}>{videoSrc?<video key={videoSrc} src={videoSrc} autoPlay muted playsInline loop={state==='idle'} preload="auto" aria-label="فتاة أنمي متحركة"/>:<img src={shown.src} alt="فتاة أنمي كاملة الجسم" draggable={false}/>}<div className="cream-face"/></div>
-  <div className="arm"><span className="hand"/><span className="plate"><b/></span></div>
-  <div className="burst"/><div className="drops">{Array.from({length:9},(_,i)=><i key={i}/>)}</div>
+  <div className={`character anime-character ${shown.mirror&&!videoSrc?'mirror':''}`}>{videoSrc?<video key={videoSrc} src={videoSrc} autoPlay muted playsInline loop={state==='idle'} preload="auto" aria-label="فتاة أنمي متحركة"/>:<img src={shown.src} alt="فتاة أنمي كاملة الجسم" draggable={false}/>} {!isWrong&&<div className="cream-face"/>}</div>
+  {!isWrong&&<><div className="arm"><span className="hand"/><span className="plate"><b/></span></div><div className="burst"/><div className="drops">{Array.from({length:9},(_,i)=><i key={i}/>)}</div></>}
  </div>
 }

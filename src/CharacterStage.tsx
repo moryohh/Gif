@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader.js';
 import type {AnimState} from './game';
-import {AnimeCharacter} from './AnimeCharacter';
+import {AnimeCharacter,type AnimeIdleMode} from './AnimeCharacter';
 
 export type CharacterVariant='elf'|'cyborg'|'anime';
 type Controller={setState:(s:AnimState)=>void;destroy:()=>void};
@@ -56,4 +56,4 @@ function makeController(host:HTMLDivElement,variant:CharacterVariant):Controller
  return{setState,destroy:()=>{cancelAnimationFrame(raf);ro.disconnect();renderer.dispose();renderer.domElement.remove();scene.traverse(o=>{const m=o as THREE.Mesh;if(m.geometry)m.geometry.dispose();if(m.material)(Array.isArray(m.material)?m.material:[m.material]).forEach(x=>x.dispose())})}}
 }
 function ThreeCharacterStage({state,variant}:{state:AnimState;variant:Exclude<CharacterVariant,'anime'>}){const host=useRef<HTMLDivElement>(null),control=useRef<Controller|null>(null);useEffect(()=>{if(!host.current)return;control.current=makeController(host.current,variant);return()=>{control.current?.destroy();control.current=null}},[variant]);useEffect(()=>control.current?.setState(state),[state]);return <div className="phaser-stage elf-stage" ref={host} aria-label={`حالة الشخصية: ${state}`}/>}
-export function CharacterStage({state,variant}:{state:AnimState;variant:CharacterVariant}){return variant==='anime'?<AnimeCharacter state={state}/>:<ThreeCharacterStage state={state} variant={variant}/>}
+export function CharacterStage({state,variant,animeMode='front'}:{state:AnimState;variant:CharacterVariant;animeMode?:AnimeIdleMode}){return variant==='anime'?<AnimeCharacter state={state} mode={animeMode}/>:<ThreeCharacterStage state={state} variant={variant}/>}
